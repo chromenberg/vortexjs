@@ -186,6 +186,10 @@ export class User {
   public get lastSeen() {
     return mknull(this.userInfo?.last_seen);
   }
+
+  public get id() {
+    return mknull(this.userInfo?.id)
+  }
 }
 
 export class UserStore extends AbstractStore<User> {
@@ -196,5 +200,17 @@ export class UserStore extends AbstractStore<User> {
     return await getUser(id)
       .then((data) => new User(this._parent, data.data))
       .catch(() => null);
+  }
+
+  public async fetchByUsername(username: string) {
+    // key should be the ID
+    const id = this._cache._internal.findKey(([key, value]) => {
+      return value.item.username === username;
+    });
+    
+    // if the ID is not present
+    if (!id) return null;
+    
+    return this.getData(id);
   }
 }

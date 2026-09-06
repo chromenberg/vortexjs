@@ -1,5 +1,5 @@
-import type { VortexJS } from "../index";
-import { Collection } from "./Collection";
+import type { VortexJS } from "../index.js";
+import { Collection } from "./Collection.js";
 
 type TimedItem<T> = {
   last_updated: Date;
@@ -7,16 +7,22 @@ type TimedItem<T> = {
 };
 type Seconds = number;
 export class Cache<T> {
-  private _data: Collection<string, TimedItem<T>> = new Collection();
+  protected _data: Collection<string, TimedItem<T>> = new Collection();
   private _limit: Seconds;
   constructor(limit: Seconds) {
     this._limit = limit;
+  }
+
+  public get _internal() {
+    return this._data
   }
   
   public get(key: string): T | undefined {
     const item = this._data.get(key);
     return item?.item;
   }
+
+
 
   public set(key: string, value: T) {
     this._data.set(key, { last_updated: new Date(), item: value });
@@ -51,7 +57,7 @@ export class Cache<T> {
 
 
 export class AbstractStore<T> {
-  private _cache: Cache<T> = new Cache<T>(60);
+  protected _cache: Cache<T> = new Cache<T>(60);
   protected _parent: VortexJS;
   constructor(parent: VortexJS) {
     this._parent = parent;
@@ -71,4 +77,5 @@ export class AbstractStore<T> {
     if (data !== null) this._cache.set(id, data);
     return data;
   }
+
 }

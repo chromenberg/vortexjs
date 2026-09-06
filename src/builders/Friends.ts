@@ -1,8 +1,8 @@
-import { AbstractStore } from "../core/Cache";
-import type { VortexJS } from "../index";
-import { formatter, get, type ResData } from "../Routes";
-import type { APIResponse } from "./APIData";
-import { convertPresence, getUser, Presence, User } from "./User";
+import { AbstractStore } from "../core/Cache.js";
+import type { VortexJS } from "../index.js";
+import { formatter, get, type ResData } from "../Routes.js";
+import type { APIResponse } from "./APIData.js";
+import { convertPresence, getUser, Presence, User } from "./User.js";
 
 export type APIFriendsData = APIResponse<{
   username: string;
@@ -37,15 +37,30 @@ export class FriendsList {
       };
     });
   }
-  public friends() {
+  public get friends() {
     return this.data ?? [];
   }
+
+  private findFriend(input: string, field: keyof FriendsData) {
+    return this.data?.find((friend) => friend[field] === input);
+  }
+  
   public async getUser(id: string): Promise<User | null> {
     // find the friend by id
-    const friend = this.data?.find((friend) => friend.id === id);
+    const friend = this.findFriend(id, "id");
     if (!friend) return null;
 
     const res = await getUser(id);
+
+    return new User(this._parent, res.data);
+  }
+  
+  public async getUserByUsername(username: string): Promise<User | null> {
+    // find the friend by id
+    const friend = this.findFriend(username, "username");
+    if (!friend) return null;
+
+    const res = await getUser(friend.id);
 
     return new User(this._parent, res.data);
   }

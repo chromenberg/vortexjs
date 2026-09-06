@@ -3,9 +3,11 @@ import type { APIUser } from "./builders/User.js";
 const url = "https://playvortex.io";
 const root = url + "/api";
 const userRoute = "/users/$1";
+const friendsRoute = "/friends/$1";
 
 export const routes = {
   user: userRoute,
+  friends: friendsRoute,
 };
 
 type Stringable = string | number;
@@ -15,7 +17,7 @@ export function formatter(
   route: keyof typeof routes,
   ...replacers: string[]
 ): any {
-  return root + routes[route].replace(/\$(\d+)/g, (_, i) => replacers[i-1]);
+  return root + routes[route].replace(/\$(\d+)/g, (_, i) => replacers[i - 1]);
 }
 
 export const get = <ResType>(
@@ -40,6 +42,3 @@ export const get = <ResType>(
   });
 };
 
-export const getUser = (id: string): Promise<ResData<APIUser>> => {
-  return get<APIUser>(formatter("user", id));
-};

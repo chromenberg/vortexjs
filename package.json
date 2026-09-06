@@ -1,0 +1,29 @@
+{
+  "name": "vortexjs",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "vortex",
+    "roblox",
+    "ass"
+  ],
+  "homepage": "https://github.com/chromenberg/vortexjs#readme",
+  "bugs": {
+    "url": "https://github.com/chromenberg/vortexjs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chromenberg/vortexjs.git"
+  },
+  "license": "ISC",
+  "author": "me",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "make them yourself",
+    "start": "tsgo && node ./dist/index.js"
+  },
+  "dependencies": {
+    "@types/node": "^26.4.1"
+  }
+}

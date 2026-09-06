@@ -1,11 +1,16 @@
-import { User } from "./builders/User.js";
-import { getUser } from "./Routes.js";
+import { FriendsStore } from "./builders/Friends.js";
+import { UserStore } from "./builders/User.js";
 
 export class VortexJS {
+  private _friends: FriendsStore = new FriendsStore(this);
+  private _users: UserStore = new UserStore(this);
   constructor() { }
 
-  public async getUser(id: string): Promise<User> {
-    const user = await getUser(id);
-    return new User(user.data);
+  public get users(): UserStore {
+    return this._users;
+  }
+
+  public get friends(): FriendsStore {
+    return this._friends;
   }
 }

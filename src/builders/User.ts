@@ -1,4 +1,6 @@
-import { getUser } from "../Routes.js";
+import { AbstractStore, Cache } from "../core/Cache.js";
+import type { VortexJS } from "../index.js";
+import { formatter, get, type ResData } from "../Routes.js";
 import {
   type APIResponse,
   type Created,
@@ -6,6 +8,11 @@ import {
   type Null,
 } from "./APIData.js";
 import type { ShirtID } from "./Catalog.js";
+import { FriendsList, FriendsStore } from "./Friends.js";
+
+export const getUser = (id: string): Promise<ResData<APIUser>> => {
+  return get<APIUser>(formatter("user", id));
+};
 
 export enum FriendStatus {
   Self,
@@ -22,7 +29,7 @@ export enum Presence {
   Undefined = -1,
   Offline,
   Online,
-  InStudio
+  InStudio,
 }
 
 export const PresenceMap: Record<Presence, string> = {
@@ -85,9 +92,9 @@ function convertFriend(data: RawAPIUser) {
   return friendStatus;
 }
 
-function convertPresence(data: RawAPIUser) {
+export function convertPresence(data: string): Presence {
   let presence = Presence.Offline;
-  switch (data.presence) {
+  switch (data) {
     case "online":
       presence = Presence.Online;
     case "offline":
@@ -106,11 +113,18 @@ function mknull<T>(inp: T): T | null {
 
 export class User {
   private userInfo: APIUser | null = null;
-  constructor(data: APIUser) {
+  private _parent: VortexJS;
+  constructor(parent: VortexJS, data: APIUser) {
+    this._parent = parent;
     data.follow_status = convertFollow(data);
     data.friendship_status = convertFriend(data);
-    data.presence = convertPresence(data);
+    data.presence = convertPresence((data as RawAPIUser).presence as string);
     this.userInfo = data;
+  }
+
+  public get friends() {
+    if (!this.userInfo?.id) return null;
+    return this._parent.friends.fetch(this.userInfo?.id);
   }
 
   public get username() {
@@ -171,5 +185,16 @@ export class User {
 
   public get lastSeen() {
     return mknull(this.userInfo?.last_seen);
+  }
+}
+
+export class UserStore extends AbstractStore<User> {
+  constructor(parent: VortexJS) {
+    super(parent);
+  }
+  protected async getData(id: string): Promise<User | null> {
+    return await getUser(id)
+      .then((data) => new User(this._parent, data.data))
+      .catch(() => null);
   }
 }

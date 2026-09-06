@@ -1,4 +1,4 @@
-export type WithID<T> = { id: number } & T;
+export type WithID<T> = { id: string } & T;
 export type APIResponse<T> = WithID<T>;
 
 export type CreateDate = { created_at: Date };

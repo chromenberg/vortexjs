@@ -22,12 +22,14 @@ export enum Presence {
   Undefined = -1,
   Offline,
   Online,
+  InStudio
 }
 
 export const PresenceMap: Record<Presence, string> = {
   [Presence.Undefined]: "undefined",
   [Presence.Offline]: "offline",
   [Presence.Online]: "online",
+  [Presence.InStudio]: "in_studio",
 };
 
 export type APIUser = Created<
@@ -90,6 +92,8 @@ function convertPresence(data: RawAPIUser) {
       presence = Presence.Online;
     case "offline":
       presence = Presence.Offline;
+    case "in_studio":
+      presence = Presence.InStudio;
     default:
       presence = Presence.Offline;
   }
